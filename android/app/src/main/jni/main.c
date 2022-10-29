@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <android/log.h>
 #include <android_native_app_glue.h>
-#include "util.h"
-
 #include "es_utils.h"
+
+#include "util.h"
 
 // the game state storage, this is like the saved state bundle
 struct saved_state {

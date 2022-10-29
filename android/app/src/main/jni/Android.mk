@@ -15,9 +15,12 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE    := game
+LOCAL_MODULE    	:= game
 
-LOCAL_SRC_FILES := main.c egl_setup.c
+LOCAL_C_INCLUDES 	:= $(LOCAL_PATH)/../../../../../include/
+EGL_UTILS_SRC	 	:= $(LOCAL_PATH)/../../../../../src/
+
+LOCAL_SRC_FILES := $(EGL_UTILS_SRC)/egl_utils.c main.c
 
 LOCAL_LDLIBS    := -llog -landroid -lEGL #-lGLESv2 #-lGLESv2_CM
 LOCAL_STATIC_LIBRARIES := android_native_app_glue

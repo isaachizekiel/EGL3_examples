@@ -5,8 +5,9 @@
 #include <stdlib.h>
 #include <android/log.h>
 #include <android_native_app_glue.h>
-
 #include "util.h"
+
+#include "egl_utils.h"
 
 // the game state storage, this is like the saved state bundle
 struct saved_state {
@@ -15,18 +16,12 @@ struct saved_state {
     float y;
 };
 
-// this seems like redundant with `android_app` structure
-struct engine {
-    struct android_app* app;
-    int is_animating;
-    struct saved_state state;
-};
-
 // global pointers are dangerous but let's take our chances
-struct engine *e = {0};
+struct es_context * context = {0};
 
 // all application lifecycle callbacks are handled here
 static void handle_cmd(struct android_app* app, int32_t cmd) {
+    context = ( struct es_context * ) app->userData;
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
             LOGI("APP_CMD_INIT_WINDOW: %d", cmd);
@@ -44,11 +39,11 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             LOGI("APP_CMD_CONTENT_RECT_CHANGED: %d", cmd);
             break;
         case APP_CMD_GAINED_FOCUS:
-            e->is_animating = 1;
+            context->animating = 1;
             LOGI("APP_CMD_GAINED_FOCUS: %d", cmd);
             break;
         case APP_CMD_LOST_FOCUS:
-            e->is_animating = 0;
+            context->animating = 0;
             LOGI("APP_CMD_LOST_FOCUS: %d", cmd);
             break;
         case APP_CMD_CONFIG_CHANGED:
@@ -65,9 +60,10 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_SAVE_STATE:
             // system ahs asked us to save out current state
-            e->app->savedState = malloc(sizeof (struct  saved_state));
-            *((struct saved_state *)e->app->savedState) = e->state;
-            e->app->savedStateSize = sizeof (struct saved_state);
+            // TODO finish this
+            // ((struct android_app *)context->platform_data)->savedState = malloc(sizeof (struct  saved_state));
+            // *((struct saved_state *)e->app->savedState) = e->state;
+            // ((struct android_app *)context->platform_data)->savedStateSize = sizeof (struct saved_state);
             LOGI("APP_CMD_SAVE_STATE: %d", cmd);
             break;
         case APP_CMD_PAUSE:
@@ -90,9 +86,10 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event) {
     switch (AInputEvent_getType(event)) {
         case AINPUT_EVENT_TYPE_MOTION:
         case AINPUT_SOURCE_TOUCHSCREEN:
-            e->is_animating = 1;
-            e->state.x = AMotionEvent_getX(event, 0);
-            e->state.y = AMotionEvent_getY(event, 0);
+            // todo handle this
+            //context->is_animating = 1;
+            //context->state.x = AMotionEvent_getX(event, 0);
+            //context->state.y = AMotionEvent_getY(event, 0);
             return 1;
     }
     return 0;
@@ -108,15 +105,15 @@ static void game_loop() {
         int events;
         struct android_poll_source* source;
         // if not animating, block until we get event; if animating don't block;
-        while((ALooper_pollAll(e->is_animating ? 0 : -1, NULL, &events, (void **) &source)) >= 0) {
+        while((ALooper_pollAll(context->animating ? 0 : -1, NULL, &events, (void **) &source)) >= 0) {
             // processes event
             if (source != NULL) {
-                source->process(e->app, source);
+                source->process(context->platform_data, source);
             }
             // are always exiting
-            if (e->app->destroyRequested) return;
+            if (((struct android_app *)context->platform_data)->destroyRequested) return;
         }
-        if (e->is_animating) do_frame();
+        if (context->animating) do_frame();
     }
 }
 
@@ -124,13 +121,13 @@ void android_main(struct android_app* app) {
     app->onAppCmd = handle_cmd;
     app->onInputEvent = handle_input;
 
-    e = malloc (sizeof (struct engine));
-    e->app = app;
+    context = malloc (sizeof (struct es_context));
+
+    context->platform_data = app;
 
     // main window loop
     game_loop();
 
     // release the resource used by the window
-    free(e);
+    free(context);
 }
-

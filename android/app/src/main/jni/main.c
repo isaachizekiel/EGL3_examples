@@ -21,7 +21,7 @@ struct es_context * context = {0};
 
 // all application lifecycle callbacks are handled here
 static void handle_cmd(struct android_app* app, int32_t cmd) {
-    context = ( struct es_context * ) app->userData;
+    context = (struct es_context *) app->userData;
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
             LOGI("APP_CMD_INIT_WINDOW: %d", cmd);

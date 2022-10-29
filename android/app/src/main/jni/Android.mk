@@ -20,7 +20,7 @@ LOCAL_MODULE    	:= game
 LOCAL_C_INCLUDES 	:= $(LOCAL_PATH)/../../../../../include/
 EGL_UTILS_SRC	 	:= $(LOCAL_PATH)/../../../../../src/
 
-LOCAL_SRC_FILES := $(EGL_UTILS_SRC)/egl_utils.c main.c
+LOCAL_SRC_FILES := $(EGL_UTILS_SRC)/es_utils.c main.c
 
 LOCAL_LDLIBS    := -llog -landroid -lEGL #-lGLESv2 #-lGLESv2_CM
 LOCAL_STATIC_LIBRARIES := android_native_app_glue

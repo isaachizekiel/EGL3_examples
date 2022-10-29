@@ -7,7 +7,7 @@
 #include <android_native_app_glue.h>
 #include "util.h"
 
-#include "egl_utils.h"
+#include "es_utils.h"
 
 // the game state storage, this is like the saved state bundle
 struct saved_state {

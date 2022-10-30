@@ -21,11 +21,13 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
     struct egl_context * context = app->userData;
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
+            context->app_life_cycle ^= 0x1;
             LOGI("APP_CMD_INIT_WINDOW: %d", cmd);
             break;
         case APP_CMD_TERM_WINDOW:
+            clean_egl_surface(context);
+            context->app_life_cycle ^= 0x1;
             LOGI("APP_CMD_TERM_WINDOW: %d", cmd);
-            clean_egl_sur`face(context);
             break;
         case APP_CMD_WINDOW_RESIZED:
             LOGI("APP_CMD_WINDOW_RESIZED: %d", cmd);
@@ -37,7 +39,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             LOGI("APP_CMD_CONTENT_RECT_CHANGED: %d", cmd);
             break;
         case APP_CMD_GAINED_FOCUS:
-            context->app_life_cycle &= 0x4;
+            context->app_life_cycle ^= 0x4;
             LOGI("APP_CMD_GAINED_FOCUS: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_LOST_FOCUS:
@@ -51,6 +53,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             LOGI("APP_CMD_LOW_MEMORY: %d", cmd);
             break;
         case APP_CMD_START:
+            context->app_life_cycle ^= 0x2;
             LOGI("APP_CMD_START: %d", cmd);
             break;
         case APP_CMD_RESUME:
@@ -68,6 +71,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             LOGI("APP_CMD_PAUSE: %d", cmd);
             break;
         case APP_CMD_STOP:
+            context->app_life_cycle ^= 0x2;
             LOGI("APP_CMD_STOP: %d", cmd);
             break;
         case APP_CMD_DESTROY:
@@ -95,10 +99,11 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event) {
 
 static int is_animating(struct android_app *app) {
     struct egl_context * context = app->userData;
-    return context->app_life_cycle ^ 0x7 ? 0 : 1;
+    return context->app_life_cycle == 0x7 ? 1 : 0;
 }
 
 static void do_frame(struct android_app *app) {
+    LOGE("do frame");
     struct egl_context *context = app->userData;
     prepare_egl(context);
 }

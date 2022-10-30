@@ -127,7 +127,7 @@ int prepare_egl(struct egl_context *context) {
     return -1;
   }
 
-  if (!initialize_egl_surface(context, 0)) {
+  if (!initialize_egl_surface(context, ES_WINDOW_RGB)) {
     return -2;
   }
 

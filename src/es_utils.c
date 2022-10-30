@@ -9,7 +9,7 @@
 #include <android_native_app_glue.h>
 #endif
 
-#define DEBUG_TAG "Game"
+#define DEBUG_TAG "EGL3_examples"
 
 #ifdef ANDROID
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, DEBUG_TAG, __VA_ARGS__))

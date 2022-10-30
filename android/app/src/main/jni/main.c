@@ -3,8 +3,6 @@
 //
 
 #include <stdlib.h>
-#include <android/log.h>
-#include <android_native_app_glue.h>
 #include "es_utils.h"
 
 // the game state storage, this is like the saved state bundle

@@ -42,7 +42,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_LOST_FOCUS:
             context->app_life_cycle ^= 0x4;
-            LOGI("APP_CMD_GAINED_FOCUS: %d - %02x", cmd, context->app_life_cycle);
+            LOGI("APP_CMD_LOST_FOCUS: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_CONFIG_CHANGED:
             LOGI("APP_CMD_CONFIG_CHANGED: %d", cmd);

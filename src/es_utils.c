@@ -157,7 +157,7 @@ void clean_egl_surface(struct egl_context * context) {
   eglMakeCurrent(context->egl_context, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
   if (context->egl_surface != EGL_NO_SURFACE) {
-    eglDestroySurface(context->egl_surface, context->egl_surface);
+    eglDestroySurface(context->egl_display, context->egl_surface);
     context->egl_surface = EGL_NO_SURFACE;    
   }
 }

@@ -25,6 +25,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_TERM_WINDOW:
             LOGI("APP_CMD_TERM_WINDOW: %d", cmd);
+            clean_egl_surface(context);
             break;
         case APP_CMD_WINDOW_RESIZED:
             LOGI("APP_CMD_WINDOW_RESIZED: %d", cmd);
@@ -98,9 +99,7 @@ static int is_animating(struct android_app *app) {
 }
 
 static void do_frame(struct android_app *app) {
-    // LOGI("doing frame");
     struct egl_context *context = app->userData;
-
     prepare_egl(context);
 }
 

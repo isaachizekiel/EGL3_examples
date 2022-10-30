@@ -32,7 +32,7 @@ struct egl_context {
   // 0 0 0 0 0 0 0 1 = mHasWindow;
   // 0 0 0 0 0 0 1 1 = mIsVisible, mHasWindow;
   // 0 0 0 0 0 1 1 1 = mHasFocus, mIsVisible, mHasWindow;
-  unsigned char app_life_cycle;
+    unsigned char app_life_cycle; // this is not working 100 %
 };
 
 
@@ -50,9 +50,5 @@ void clean_egl_display();
 
 // clean native window
 void clean_native_window();
-
-
-
-
 
 #endif

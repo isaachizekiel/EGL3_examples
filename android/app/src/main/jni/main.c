@@ -25,7 +25,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_TERM_WINDOW:
             LOGI("APP_CMD_TERM_WINDOW: %d", cmd);
-            clean_egl_surface(context);
+            clean_egl_sur`face(context);
             break;
         case APP_CMD_WINDOW_RESIZED:
             LOGI("APP_CMD_WINDOW_RESIZED: %d", cmd);

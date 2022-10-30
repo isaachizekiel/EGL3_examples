@@ -16,11 +16,9 @@ struct saved_state {
     float y;
 };
 
-
-
 // all application lifecycle callbacks are handled here
 static void handle_cmd(struct android_app* app, int32_t cmd) {
-    struct es_context * context = app->userData;
+    struct egl_context * context = app->userData;
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
             LOGI("APP_CMD_INIT_WINDOW: %d", cmd);
@@ -38,12 +36,12 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             LOGI("APP_CMD_CONTENT_RECT_CHANGED: %d", cmd);
             break;
         case APP_CMD_GAINED_FOCUS:
-            context->animating = 1;
-            LOGI("APP_CMD_GAINED_FOCUS: %d", cmd);
+            context->app_life_cycle &= 0x4;
+            LOGI("APP_CMD_GAINED_FOCUS: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_LOST_FOCUS:
-            context->animating = 0;
-            LOGI("APP_CMD_LOST_FOCUS: %d", cmd);
+            context->app_life_cycle ^= 0x4;
+            LOGI("APP_CMD_GAINED_FOCUS: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_CONFIG_CHANGED:
             LOGI("APP_CMD_CONFIG_CHANGED: %d", cmd);
@@ -94,18 +92,24 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event) {
     return 0;
 }
 
-//
-static void do_frame() {
+static int is_animating(struct android_app *app) {
+    struct egl_context * context = app->userData;
+    return context->app_life_cycle ^ 0x7 ? 0 : 1;
+}
+
+static void do_frame(struct android_app *app) {
     // LOGI("doing frame");
+    struct egl_context *context = app->userData;
+
+    prepare_egl(context);
 }
 
 static void game_loop(struct android_app* app) {
-    struct es_context * context = app->userData;
     while(1) {
         int events;
         struct android_poll_source* source;
         // if not animating, block until we get event; if animating don't block;
-        while((ALooper_pollAll(context->animating ? 0 : -1, NULL, &events, (void **) &source)) >= 0) {
+        while((ALooper_pollAll(is_animating(app) ? 0 : -1, NULL, &events, (void **) &source)) >= 0) {
             // processes event
             if (source != NULL) {
                 source->process(app, source);
@@ -113,7 +117,7 @@ static void game_loop(struct android_app* app) {
             // are we exiting
             if (app->destroyRequested) return;
         }
-        if (context->animating) do_frame();
+        if (is_animating(app)) do_frame(app);
     }
 }
 
@@ -121,13 +125,12 @@ void android_main(struct android_app* app) {
     app->onAppCmd = handle_cmd;
     app->onInputEvent = handle_input;
 
-    struct es_context * c = malloc (sizeof (struct es_context));
-
-    app->userData = c;
+    struct es_context * context = malloc (sizeof (struct egl_context));
+    app->userData = context;
 
     // main window loop
     game_loop(app);
 
-    // release the resource used by the window
-    free(c);
+    // clean memory
+    free(context);
 }

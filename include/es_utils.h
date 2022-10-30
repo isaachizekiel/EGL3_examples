@@ -8,43 +8,50 @@
 #include <EGL/eglplatform.h>
 
 
+
 #define ES_WINDOW_RGB 0
 #define ES_WINDOW_ALPHA 1
 #define ES_WINDOW_DEPTH 2
 #define ES_WINDOW_STENCIL 4
 #define ES_WINDOW_MULTISAWMPLE 8
 
-
-struct es_context {
-  void* platform_data;
-  void* user_data;
-  GLint width;
-  GLint height;
+struct egl_context {
+  GLint width, height;
 
   EGLNativeDisplayType egl_native_display;
   EGLNativeWindowType egl_native_window;
 
   EGLDisplay egl_display;
-  EGLContext egl_context;
   EGLSurface egl_surface;
+  EGLConfig* egl_config;  
+  EGLContext egl_context;
 
-  int animating;
-
-  void (*draw_cb) ( struct es_context*);
-  void (*shutdown_cb) ( struct es_context*);
-  void (*key_cb) ( struct es_context*, unsigned char, int, int);
-  void (*update_cb) ( struct es_context*, float);  
+  // variables to track Android lifecycle:
+  // bool mHasFocus, mIsVisible, mHasWindow;
+  // 0 0 0 0 0 0 0 0 = 
+  // 0 0 0 0 0 0 0 1 = mHasWindow;
+  // 0 0 0 0 0 0 1 1 = mIsVisible, mHasWindow;
+  // 0 0 0 0 0 1 1 1 = mHasFocus, mIsVisible, mHasWindow;
+  unsigned char app_life_cycle;
 };
 
-EGLBoolean es_create_window(struct es_context *, const char *title, GLint width, GLint height, GLuint flags);
 
-void es_register_draw_cb(struct es_context *, void (*draw_cb)(struct es_context *));
+// prepare to render
+int prepare_egl(struct egl_context * context);
 
-void es_register_shutdown_cb(struct es_context *, void (*shutdown_cb)(struct es_context *));
+// clean egl context
+void clean_egl_context();
 
-void es_register_key_cb(struct es_context *, void (*key_cb)(struct es_context *, unsigned char, int, int));
+// clean egl surface
+void clean_egl_surface();
 
-void es_register_update_cb(struct es_context *, void (*update_cb)(struct es_context *, float));
+// clean egl display
+void clean_egl_display();
+
+// clean native window
+void clean_native_window();
+
+
 
 
 

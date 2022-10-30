@@ -21,12 +21,12 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
         case APP_CMD_INIT_WINDOW:
             context->egl_native_window = app->window;
             context->app_life_cycle ^= 0x1;
-            LOGI("APP_CMD_INIT_WINDOW: %d", cmd);
+            LOGE("APP_CMD_INIT_WINDOW: %d", cmd);
             break;
         case APP_CMD_TERM_WINDOW:
             clean_egl_surface(context);
             context->app_life_cycle ^= 0x1;
-            LOGI("APP_CMD_TERM_WINDOW: %d", cmd);
+            LOGE("APP_CMD_TERM_WINDOW: %d", cmd);
             break;
         case APP_CMD_WINDOW_RESIZED:
             LOGI("APP_CMD_WINDOW_RESIZED: %d", cmd);
@@ -39,11 +39,11 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_GAINED_FOCUS:
             context->app_life_cycle ^= 0x4;
-            LOGI("APP_CMD_GAINED_FOCUS: %d - %02x", cmd, context->app_life_cycle);
+            LOGE("APP_CMD_GAINED_FOCUS: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_LOST_FOCUS:
             context->app_life_cycle ^= 0x4;
-            LOGI("APP_CMD_LOST_FOCUS: %d - %02x", cmd, context->app_life_cycle);
+            LOGE("APP_CMD_LOST_FOCUS: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_CONFIG_CHANGED:
             LOGI("APP_CMD_CONFIG_CHANGED: %d", cmd);
@@ -53,10 +53,10 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_START:
             context->app_life_cycle ^= 0x2;
-            LOGI("APP_CMD_START: %d - %02x", cmd, context->app_life_cycle);
+            LOGE("APP_CMD_START: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_RESUME:
-            LOGI("APP_CMD_RESUME: %d - %02x", cmd, context->app_life_cycle);
+            LOGE("APP_CMD_RESUME: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_SAVE_STATE:
             // system ahs asked us to save out current state
@@ -71,10 +71,10 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_STOP:
             context->app_life_cycle ^= 0x2;
-            LOGI("APP_CMD_STOP: %d - %02x", cmd, context->app_life_cycle);
+            LOGE("APP_CMD_STOP: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_DESTROY:
-            LOGI("APP_CMD_DESTROY: %d - %02x", cmd, context->app_life_cycle);
+            LOGE("APP_CMD_DESTROY: %d - %02x", cmd, context->app_life_cycle);
             break;
         default:
             LOGI("Unknown CMD: %d", cmd);
@@ -97,7 +97,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event) {
 }
 
 static int is_animating() {
-    LOGE("-- %d", context->app_life_cycle);
+    // LOGE("-- %d", context->app_life_cycle);
     return context->app_life_cycle == 0x7 ? 1 : 0;
 }
 

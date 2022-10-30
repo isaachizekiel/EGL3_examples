@@ -17,11 +17,11 @@ struct saved_state {
 };
 
 // global pointers are dangerous but let's take our chances
-struct es_context * context = {0};
+// struct es_context * context = {0};
 
 // all application lifecycle callbacks are handled here
 static void handle_cmd(struct android_app* app, int32_t cmd) {
-    context = ( struct es_context *) app->userData;
+    struct es_context * context = ( struct es_context *) app->userData;
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
             LOGI("APP_CMD_INIT_WINDOW: %d", cmd);
@@ -100,7 +100,9 @@ static void do_frame() {
     // LOGI("doing frame");
 }
 
-static void game_loop() {
+static void game_loop(struct es_context* context) {
+    struct android_app *app = context->platform_data;
+
     while(1) {
         int events;
         struct android_poll_source* source;
@@ -108,10 +110,10 @@ static void game_loop() {
         while((ALooper_pollAll(context->animating ? 0 : -1, NULL, &events, (void **) &source)) >= 0) {
             // processes event
             if (source != NULL) {
-                source->process(context->platform_data, source);
+                source->process(app, source);
             }
             // are we exiting
-            if (((struct android_app *)context->platform_data)->destroyRequested) return;
+            if (app->destroyRequested) return;
         }
         if (context->animating) do_frame();
     }
@@ -121,13 +123,13 @@ void android_main(struct android_app* app) {
     app->onAppCmd = handle_cmd;
     app->onInputEvent = handle_input;
 
-    context = malloc (sizeof (struct es_context));
+    struct es_context * c = malloc (sizeof (struct es_context));
 
-    context->platform_data = app;
+    c->platform_data = app;
 
     // main window loop
-    game_loop();
+    game_loop(c);
 
     // release the resource used by the window
-    free(context);
+    free(c);
 }

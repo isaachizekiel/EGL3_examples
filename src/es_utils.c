@@ -70,7 +70,7 @@ static EGLBoolean initialize_egl_surface(struct egl_context * context, GLuint fl
   };
 
   // choose config
-  if (!eglChooseConfig(context->egl_display, attrib_list, context->egl_config, 1, &num_configs)) {
+  if (!eglChooseConfig(context->egl_display, attrib_list, &(context->egl_config), 1, &num_configs)) {
     switch (eglGetError()) {
     case EGL_BAD_DISPLAY:
       // is generated if display is not an EGL display connection.
@@ -100,7 +100,7 @@ static EGLBoolean initialize_egl_surface(struct egl_context * context, GLuint fl
 
 #ifdef ANDROID
   EGLint format = 0;
-  if (!eglGetConfigAttrib(context->egl_display, *context->egl_config, EGL_NATIVE_VISUAL_ID, &format)){
+  if (!eglGetConfigAttrib(context->egl_display, context->egl_config, EGL_NATIVE_VISUAL_ID, &format)){
     switch (eglGetError()) {
     case EGL_BAD_DISPLAY:
       // is generated if display is not an EGL display connection. 
@@ -130,14 +130,14 @@ static EGLBoolean initialize_egl_context(struct egl_context *context) {
   if (context->egl_context != EGL_NO_CONTEXT) return EGL_TRUE;
 
   // create surface
-  context->egl_surface = eglCreateWindowSurface(context->egl_display, *context->egl_config, context->egl_native_window, NULL);
+  context->egl_surface = eglCreateWindowSurface(context->egl_display, context->egl_config, context->egl_native_window, NULL);
   if (context->egl_surface == EGL_NO_SURFACE) {
     // no error is returned
     return EGL_FALSE;
   }
 
   // create GL context
-  context->egl_context = eglCreateContext(context->egl_display, *context->egl_config, EGL_NO_CONTEXT/* dont share the context with another render context*/, context_attribs);
+  context->egl_context = eglCreateContext(context->egl_display, context->egl_config, EGL_NO_CONTEXT/* dont share the context with another render context*/, context_attribs);
 
   if (context->egl_context == EGL_NO_CONTEXT) {
     return GL_FALSE;

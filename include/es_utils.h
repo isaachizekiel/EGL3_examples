@@ -43,7 +43,7 @@ struct egl_context {
 
   EGLDisplay egl_display;
   EGLSurface egl_surface;
-  EGLConfig* egl_config;  
+  EGLConfig egl_config;  
   EGLContext egl_context;
 
   // variables to track Android lifecycle:

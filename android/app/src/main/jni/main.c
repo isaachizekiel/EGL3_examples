@@ -17,6 +17,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
     struct egl_context * context = app->userData;
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
+            context->egl_native_window = app->window;
             context->app_life_cycle ^= 0x1;
             LOGI("APP_CMD_INIT_WINDOW: %d", cmd);
             break;
@@ -95,6 +96,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event) {
 
 static int is_animating(struct android_app *app) {
     struct egl_context * context = app->userData;
+    LOGE("-- %d", context->app_life_cycle);
     return context->app_life_cycle == 0x7 ? 1 : 0;
 }
 

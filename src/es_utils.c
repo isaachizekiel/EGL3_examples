@@ -9,6 +9,23 @@
 #include <android_native_app_glue.h>
 #endif
 
+#define DEBUG_TAG "Game"
+
+#ifdef ANDROID
+#define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, DEBUG_TAG, __VA_ARGS__))
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, DEBUG_TAG, __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, DEBUG_TAG, __VA_ARGS__))
+#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, DEBUG_TAG, __VA_ARGS__))
+#define ABORT_GAME { LOGE("*** GAME ABORTING."); *((volatile char*)0) = 'a'; }
+#else
+#define LOGD(...) ((void)fprintf(stdout, __VA_ARGS__))
+#define LOGI(...) ((void)fprintf(stdout, __VA_ARGS__))
+#define LOGW(...) ((void)fprintf(stdout, __VA_ARGS__))
+#define LOGE(...) ((void)fprintf(stderr, __VA_ARGS__))
+#define ABORT_GAME { LOGE("*** GAME ABORTING."); *((volatile char*)0) = 'a'; }
+#endif
+    
+
 static EGLint get_context_renderable_type(EGLDisplay egl_display) {
 #ifdef EGL_KHR_create_context
   const char* extension = eglQueryString(egl_display, EGL_EXTENSIONS);
@@ -75,7 +92,26 @@ static EGLBoolean initialize_egl_surface(struct egl_context * context, GLuint fl
 
   // choose config
   if (!eglChooseConfig(context->egl_display, attrib_list, context->egl_config, 1, &num_configs)) {
-    return GL_FALSE;
+    switch (eglGetError()) {
+    case EGL_BAD_DISPLAY:
+      // is generated if display is not an EGL display connection.
+      LOGE("EGL_BAD_DISPLAY");
+      return GL_FALSE;    
+    case EGL_BAD_ATTRIBUTE:
+      // is generated if attribute_list contains an invalid frame buffer configuration attribute or
+      // an attribute value that is unrecognized or out of range.
+      LOGE("EGL_BAD_ATTRIBUTE");
+      return GL_FALSE;    
+    case EGL_NOT_INITIALIZED:
+      // is generated if display has not been initialized.
+      LOGE("EGL_NOT_INITIALIZED");
+      return GL_FALSE;    
+    case EGL_BAD_PARAMETER:
+      LOGE("EGL_BAD_PARAMETER");
+      // is generated if num_config is NULL.
+      return GL_FALSE;    
+    }    
+    return GL_FALSE;    
   }
 
   if (num_configs < 1) {
@@ -85,7 +121,22 @@ static EGLBoolean initialize_egl_surface(struct egl_context * context, GLuint fl
 
 #ifdef ANDROID
   EGLint format = 0;
-  eglGetConfigAttrib(context->egl_display, *context->egl_config, EGL_NATIVE_VISUAL_ID, &format);
+  if (!eglGetConfigAttrib(context->egl_display, *context->egl_config, EGL_NATIVE_VISUAL_ID, &format)){
+    switch (eglGetError()) {
+    case EGL_BAD_DISPLAY:
+      // is generated if display is not an EGL display connection. 
+      break;
+    case EGL_NOT_INITIALIZED:
+      // is generated if display has not been initialized.
+      break;
+    case EGL_BAD_CONFIG:
+      // is generated if config is not an EGL frame buffer configuration. 
+      break;
+    case EGL_BAD_ATTRIBUTE:
+      // is generated if attribute is not a valid frame buffer configuration attribute. 
+      break;
+    }      
+  } 
   ANativeWindow_setBuffersGeometry(context->egl_native_window, 0, 0, format);
 #endif
 
@@ -99,10 +150,10 @@ static EGLBoolean initialize_egl_context(struct egl_context *context) {
   // check if we already have a display
   if (context->egl_context != EGL_NO_CONTEXT) return EGL_TRUE;
 
-    // create surface
+  // create surface
   context->egl_surface = eglCreateWindowSurface(context->egl_display, *context->egl_config, context->egl_native_window, NULL);
-
   if (context->egl_surface == EGL_NO_SURFACE) {
+    // no error is returned
     return EGL_FALSE;
   }
 
@@ -115,23 +166,61 @@ static EGLBoolean initialize_egl_context(struct egl_context *context) {
 
   // make the context current
   if (!eglMakeCurrent(context->egl_display, context->egl_surface, context->egl_surface, context->egl_context)) {
+    switch (eglGetError()) {
+    case  EGL_BAD_MATCH:
+      // If draw or read are not compatible with context, then an EGL_BAD_MATCH error is generated.
+      LOGE("EGL_BAD_MATCH");
+      return GL_FALSE;
+    case EGL_BAD_ACCESS:
+      // If context is current to some other thread, or if either draw or read are bound to contexts in another thread,
+      // an EGL_BAD_ACCESS error is generated.
+      // If binding context would exceed the number of current contexts of that client API type supported by the implementation,
+      // an EGL_BAD_ACCESS error is generated.
+      // If either draw or read are pbuffers created with eglCreatePbufferFromClientBuffer,
+      // and the underlying bound client API buffers are in use by the client API that created them,
+      // an EGL_BAD_ACCESS error is generated.
+      LOGE("EGL_BAD_ACCESS");
+      return GL_FALSE;
+    case EGL_BAD_CONTEXT:
+      // If context is not a valid context and is not EGL_NO_CONTEXT,
+      // an EGL_BAD_CONTEXT error is generated.
+      LOGE("EGL_BAD_CONTEXT");
+      return GL_FALSE;
+    case  EGL_BAD_SURFACE:
+      // If either draw or read are not valid EGL surfaces
+      // and are not EGL_NO_SURFACE, an EGL_BAD_SURFACE error is generated.
+      LOGE("EGL_BAD_SURFACE");
+      return GL_FALSE;
+    case EGL_BAD_NATIVE_WINDOW:
+      // If a native window underlying either draw or read is no longer valid,
+      // an EGL_BAD_NATIVE_WINDOW error is generated.       
+      LOGE("EGL_BAD_NATIVE_WINDOW");
+      return GL_FALSE;
+    case EGL_BAD_CURRENT_SURFACE:
+      // If the previous context of the calling thread has unflushed commands,
+      // and the previous surface is no longer valid, an EGL_BAD_CURRENT_SURFACE error is generated.      
+      LOGE("EGL_BAD_CURRENT_SURFACE");
+      return GL_FALSE;      
+    }
     return GL_FALSE;
   }
-
   return GL_TRUE;
 }
 
 int prepare_egl(struct egl_context *context) {
 
   if (!initialize_egl_display(context)) {
+    LOGD("Display is already initialized");
     return -1;
   }
 
   if (!initialize_egl_surface(context, ES_WINDOW_RGB)) {
+    LOGD("Surface is already initialized");
     return -2;
   }
 
   if (!initialize_egl_context(context)) {
+    LOGD("Context is already initialized");
     return -3;
   }
   
@@ -144,7 +233,28 @@ void clean_egl_context(struct egl_context* context) {
 
   // todo check if there are egl objects
   
-  eglMakeCurrent(context->egl_context, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+  if (!eglMakeCurrent(context->egl_context, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT)) {
+    switch (eglGetError()) {
+    case EGL_BAD_MATCH:
+      LOGE("EGL_BAD_MATCH");
+      break;
+    case EGL_BAD_ACCESS:
+      LOGE("EGL_BAD_ACCESS");
+      break;
+    case EGL_BAD_CONTEXT:
+      LOGE("EGL_BAD_CONTEXT");
+      break;
+    case EGL_BAD_SURFACE:
+      LOGE("EGL_BAD_SURFACE");
+      break;
+    case EGL_BAD_NATIVE_WINDOW:
+      LOGE("EGL_BAD_NATIVE_WINDOW");
+      break;
+    case EGL_BAD_CURRENT_SURFACE:
+      LOGE("EGL_BAD_CURRENT_SURFACE");
+      break;
+    }
+  }
 
   if (context->egl_context == EGL_NO_CONTEXT) {
     eglDestroyContext(context->egl_display, context->egl_context);
@@ -176,4 +286,4 @@ void clean_egl_display(struct egl_context * context) {
 // clean native window
 void clean_native_window() {
   // todo  
-}
+    }

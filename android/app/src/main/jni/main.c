@@ -7,8 +7,6 @@
 #include <android_native_app_glue.h>
 #include "es_utils.h"
 
-#include "util.h"
-
 // the game state storage, this is like the saved state bundle
 struct saved_state {
     float angle;

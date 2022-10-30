@@ -12,9 +12,11 @@ struct saved_state {
     float y;
 };
 
+struct egl_context * context;
+
 // all application lifecycle callbacks are handled here
 static void handle_cmd(struct android_app* app, int32_t cmd) {
-    struct egl_context * context = app->userData;
+    //struct egl_context * context = app->userData;
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
             context->egl_native_window = app->window;
@@ -51,10 +53,10 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_START:
             context->app_life_cycle ^= 0x2;
-            LOGI("APP_CMD_START: %d", cmd);
+            LOGI("APP_CMD_START: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_RESUME:
-            LOGI("APP_CMD_RESUME: %d", cmd);
+            LOGI("APP_CMD_RESUME: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_SAVE_STATE:
             // system ahs asked us to save out current state
@@ -69,10 +71,10 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_STOP:
             context->app_life_cycle ^= 0x2;
-            LOGI("APP_CMD_STOP: %d", cmd);
+            LOGI("APP_CMD_STOP: %d - %02x", cmd, context->app_life_cycle);
             break;
         case APP_CMD_DESTROY:
-            LOGI("APP_CMD_DESTROY: %d", cmd);
+            LOGI("APP_CMD_DESTROY: %d - %02x", cmd, context->app_life_cycle);
             break;
         default:
             LOGI("Unknown CMD: %d", cmd);
@@ -94,16 +96,14 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event) {
     return 0;
 }
 
-static int is_animating(struct android_app *app) {
-    struct egl_context * context = app->userData;
+static int is_animating() {
     LOGE("-- %d", context->app_life_cycle);
     return context->app_life_cycle == 0x7 ? 1 : 0;
 }
 
 static void do_frame(struct android_app *app) {
-    LOGE("do frame");
-    struct egl_context *context = app->userData;
-    prepare_egl(context);
+    // LOGE("do frame");
+    // prepare_egl(context);
 }
 
 static void game_loop(struct android_app* app) {
@@ -127,7 +127,7 @@ void android_main(struct android_app* app) {
     app->onAppCmd = handle_cmd;
     app->onInputEvent = handle_input;
 
-    struct es_context * context = malloc (sizeof (struct egl_context));
+    context = malloc (sizeof (struct egl_context));
     app->userData = context;
 
     // main window loop

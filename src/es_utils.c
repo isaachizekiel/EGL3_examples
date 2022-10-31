@@ -264,5 +264,6 @@ void clean_egl_display(struct egl_context * context) {
 
 // clean native window
 void clean_native_window() {
-  // todo  
-    }
+  // todo
+  
+}

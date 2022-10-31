@@ -111,7 +111,7 @@ static void game_loop(struct android_app* app) {
         int events;
         struct android_poll_source* source;
         // if not animating, block until we get event; if animating don't block;
-        while((ALooper_pollAll(is_animating(app) ? 0 : -1, NULL, &events, (void **) &source)) >= 0) {
+        while((ALooper_pollAll(is_animating() ? 0 : -1, NULL, &events, (void **) &source)) >= 0) {
             // processes event
             if (source != NULL) {
                 source->process(app, source);
@@ -119,7 +119,7 @@ static void game_loop(struct android_app* app) {
             // are we exiting
             if (app->destroyRequested) return;
         }
-        if (is_animating(app)) do_frame(app);
+        if (is_animating()) do_frame(app);
     }
 }
 

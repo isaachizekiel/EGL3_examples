@@ -64,7 +64,7 @@ static EGLBoolean initialize_egl_surface(struct egl_context * context, GLuint fl
     EGL_ALPHA_SIZE, (flags & ES_WINDOW_ALPHA) ? 8 : EGL_DONT_CARE,
     EGL_DEPTH_SIZE, (flags & ES_WINDOW_DEPTH) ? 8 : EGL_DONT_CARE,
     EGL_STENCIL_SIZE, (flags & ES_WINDOW_STENCIL) ? 8 : EGL_DONT_CARE,
-    EGL_SAMPLE_BUFFERS, (flags & ES_WINDOW_MULTISAWMPLE) ? 1 : 0,
+    EGL_SAMPLE_BUFFERS, (flags & ES_WINDOW_MULTISAMPLE) ? 1 : 0,
     EGL_RENDERABLE_TYPE, get_context_renderable_type(context->egl_display),
     EGL_NONE
   };

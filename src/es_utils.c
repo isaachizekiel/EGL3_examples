@@ -212,7 +212,7 @@ void clean_egl_context(struct egl_context* context) {
 
   // todo check if there are egl objects
   
-  if (!eglMakeCurrent(context->egl_context, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT)) {
+  if (!eglMakeCurrent(context->egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT)) {
     switch (eglGetError()) {
     case EGL_BAD_MATCH:
       LOGE("EGL_BAD_MATCH");
@@ -243,7 +243,7 @@ void clean_egl_context(struct egl_context* context) {
 
 // clean egl surface
 void clean_egl_surface(struct egl_context * context) {
-  eglMakeCurrent(context->egl_context, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+  eglMakeCurrent(context->egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
   if (context->egl_surface != EGL_NO_SURFACE) {
     eglDestroySurface(context->egl_display, context->egl_surface);

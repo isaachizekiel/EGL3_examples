@@ -82,6 +82,22 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
     }
 }
 
+// input events are collected using this android_app callback function
+static int32_t handle_input(struct android_app* app, AInputEvent* event) {
+    switch (AInputEvent_getType(event)) {
+        case AINPUT_EVENT_TYPE_MOTION:
+        case AINPUT_SOURCE_TOUCHSCREEN:
+            // todo handle this
+            //context->is_animating = 1;
+            //context->state.x = AMotionEvent_getX(event, 0);
+            //context->state.y = AMotionEvent_getY(event, 0);
+            return 1;
+    }
+    return 0;
+}
+
+
+
 static int is_animating() {
     LOGE("-- %d", context->app_life_cycle);
     return context->app_life_cycle == 0x7 ? 1 : 0;
@@ -111,7 +127,7 @@ static void game_loop(struct android_app* app) {
 
 void android_main(struct android_app* app) {
     app->onAppCmd = handle_cmd;
-    // app->onInputEvent = handle_input;
+    app->onInputEvent = handle_input;
 
     context = malloc (sizeof (struct egl_context));
     app->userData = context;

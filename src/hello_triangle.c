@@ -1,8 +1,6 @@
 /* hello_triangle.c*/
 
-
 #include "es_utils.h"
-#include <GLES3/gl3.h>
 #include <stdlib.h>
 
 
@@ -116,7 +114,38 @@ int init(struct egl_context * context) {
 
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   return 0;
-  
 }
 
+
+// draw the triangle using the above triangle shader
+void draw(struct egl_context * context) {
+  struct user_data * ud = context->user_data;
+
+  GLfloat vector_vertices [] =
+    {
+      0.0f, 0.5f, 0.0f,
+      -0.5f, -0.5f, 0.0f,
+      0.5f, -0.5f, 0.0f
+    };
+
+  // set the view port
+  glViewport (0, 0, context->width, context->height);
+
+  // clear the color buffer
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glUseProgram(ud->program_object);
+
+  // load the vertex data
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, vector_vertices);
+  glEnableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void shutdown(struct egl_context * context) {
+  struct user_data * ud = context->user_data;
+
+  glDeleteProgram(ud->program_object);  
+}
 

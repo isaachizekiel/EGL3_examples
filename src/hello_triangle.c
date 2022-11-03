@@ -52,7 +52,7 @@ int init(struct egl_context * context) {
 
   char vertex_shader_str [] =
     "#version 300 es\n"
-    "layout(location - 0) in vec4 vPosition;\n"
+    "layout(location = 0) in vec4 vPosition;\n"
     "void main()\n"
     "{\n"
     "gl_Position = vPosition;\n"
@@ -63,9 +63,8 @@ int init(struct egl_context * context) {
     "precision mediump float;\n"
     "out vec4 fragColor;\n"
     "void main()\n"
-    "void main()\n"
     "{\n"
-    "fragColor = vec4 (1.0, 1.0, 1.0, 1.0);\n"
+    "fragColor = vec4 (1.0, 0.0, 0.0, 1.0);\n"
     "}\n";
 
 

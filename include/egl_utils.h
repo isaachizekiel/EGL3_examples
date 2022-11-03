@@ -56,12 +56,11 @@ struct egl_context {
   // 0 0 0 0 0 1 1 1 = mHasFocus, mIsVisible, mHasWindow;    
   unsigned char app_life_cycle;
 
-  void * shhader_program_data;
+  void * shader_program_data;
 
   void ( *draw_cb ) ( struct egl_context * );
   void ( *update_cb ) ( struct egl_context *, float );
   void ( *shutdown_cb ) ( struct egl_context * );
-  
 };
 
 

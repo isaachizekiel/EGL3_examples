@@ -108,12 +108,12 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event) {
 
 
 static int is_animating() {
-    LOGE("-- %d", context->app_life_cycle);
+    //LOGE("-- %d", context->app_life_cycle);
     return context->app_life_cycle == 0x7 ? 1 : 0;
 }
 
 static void do_frame(struct android_app *app) {
-    LOGE("do frame");
+    // LOGE("do frame");
     prepare_egl(context);
     context->draw_cb(context);
 }
@@ -142,7 +142,7 @@ void android_main(struct android_app* app) {
     context = malloc (sizeof (struct egl_context));
     app->userData = context;
 
-    context->shhader_program_data = malloc(sizeof (struct program_data));
+    context->shader_program_data = malloc(sizeof (struct program_data));
 
     register_draw_cb(context, draw);
     register_shutdown_cb(context, shutdown);

@@ -9,26 +9,12 @@
 #include <EGL/egl.h>
 #include <EGL/eglplatform.h>
 
+
 #ifdef ANDROID
-#include <android/log.h>
 #include <android_native_app_glue.h>
 #endif
 
-#define DEBUG_TAG "EGL3_examples"
-
-#ifdef ANDROID
-#define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, DEBUG_TAG, __VA_ARGS__))
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, DEBUG_TAG, __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, DEBUG_TAG, __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, DEBUG_TAG, __VA_ARGS__))
-#define ABORT_GAME { LOGE("*** GAME ABORTING."); *((volatile char*)0) = 'a'; }
-#else
-#define LOGD(...) ((void)fprintf(stdout, __VA_ARGS__))
-#define LOGI(...) ((void)fprintf(stdout, __VA_ARGS__))
-#define LOGW(...) ((void)fprintf(stdout, __VA_ARGS__))
-#define LOGE(...) ((void)fprintf(stderr, __VA_ARGS__))
-#define ABORT_GAME { LOGE("*** GAME ABORTING."); *((volatile char*)0) = 'a'; }
-#endif
+#include "utils.h"
 
 
 #define ES_WINDOW_RGB 0
@@ -56,7 +42,7 @@ struct egl_context {
   // 0 0 0 0 0 1 1 1 = mHasFocus, mIsVisible, mHasWindow;    
   unsigned char app_life_cycle;
 
-  void * shader_program_data;
+  void *shader_program_data;
 
   void ( *draw_cb ) ( struct egl_context * );
   void ( *update_cb ) ( struct egl_context *, float );

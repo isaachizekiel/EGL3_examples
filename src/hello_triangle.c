@@ -13,7 +13,7 @@ GLuint load_shader(GLenum type, const char * shader_src) {
 
   switch (glGetError()) {
   case 0:
-    LOGE("error creating a shader object");
+    LOGE("error creating a shader object"); 
     return 0;
   case GL_INVALID_ENUM:
     LOGE("Shader type %d is not accepted value", type);

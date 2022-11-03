@@ -186,6 +186,9 @@ static EGLBoolean initialize_egl_context(struct egl_context *context) {
   return GL_TRUE;
 }
 
+static int initialize_egl_objects(struct egl_context *context) { return 1; }
+
+
 int prepare_egl(struct egl_context *context) {
 
   if (!initialize_egl_display(context)) {

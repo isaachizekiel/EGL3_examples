@@ -28,17 +28,13 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
                 LOGE("can not initialize vertex and fragment shaders");
                 return;
             }
-            register_draw_cb(context, draw);
-            register_shutdown_cb(context, shutdown);
-
-            context->draw_cb(context);
-
             LOGE("APP_CMD_INIT_WINDOW: %d", cmd);
             break;
         case APP_CMD_TERM_WINDOW:
             if (context->shutdown_cb != NULL) context->shutdown_cb(context);
             clean_egl_surface(context);
             context->app_life_cycle ^= 0x1;
+            context->shutdown_cb(context);
             LOGE("APP_CMD_TERM_WINDOW: %d", cmd);
             break;
         case APP_CMD_WINDOW_RESIZED:
@@ -119,6 +115,7 @@ static int is_animating() {
 static void do_frame(struct android_app *app) {
     LOGE("do frame");
     prepare_egl(context);
+    context->draw_cb(context);
 }
 
 static void game_loop(struct android_app* app) {
@@ -144,6 +141,9 @@ void android_main(struct android_app* app) {
 
     context = malloc (sizeof (struct egl_context));
     app->userData = context;
+
+    register_draw_cb(context, draw);
+    register_shutdown_cb(context, shutdown);
 
     // main window loop
     game_loop(app);

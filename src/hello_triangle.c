@@ -2,6 +2,7 @@
 
 
 #include <stdlib.h>
+#include "egl_utils.h"
 #include "hello_triangle.h"
 
 
@@ -126,6 +127,7 @@ int init(struct egl_context * context) {
 void draw(struct egl_context * context) {
   struct user_data * ud = context->user_data;
 
+  LOGE("Drawing.. ");
   GLfloat vector_vertices [] =
     {
       0.0f, 0.5f, 0.0f,
@@ -148,9 +150,11 @@ void draw(struct egl_context * context) {
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
+void update(struct egl_context *context, float interval) {
+  // this is not necessary for the static render (no animation)
+}
 void shutdown(struct egl_context * context) {
   struct user_data * ud = context->user_data;
-
   glDeleteProgram(ud->program_object);  
 }
 

@@ -4,7 +4,8 @@
 
 #include <stdlib.h>
 
-#include "es_utils.h"
+#include "egl_utils.h"
+#include "hello_triangle.h"
 
 // the game state storage, this is like the saved state bundle
 struct saved_state {
@@ -133,7 +134,13 @@ void android_main(struct android_app* app) {
     context = malloc (sizeof (struct egl_context));
     app->userData = context;
 
+    if (!init(context)) {
+        LOGE("can not initialize vertex and fragment shaders");
+        return;
+    }
 
+    register_draw_cb(context, draw);
+    register_shutdown_cb(context, shutdown);
 
     // main window loop
     game_loop(app);

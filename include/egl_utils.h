@@ -57,6 +57,9 @@ struct egl_context {
   unsigned char app_life_cycle;
 
   void * user_data;
+
+  void ( *draw_cb ) ( struct egl_context * );
+  void ( *shutdown_cb ) ( struct egl_context * );
 };
 
 
@@ -74,5 +77,11 @@ void clean_egl_display();
 
 // clean native window
 void clean_native_window();
+
+// callback for the draw function
+void register_draw_cb(struct egl_context *context, void (*draw_cb)(struct egl_context *));
+
+// callback for the shutdown function
+void register_shutdown_cb(struct egl_context *context, void (*shutdown_cb)(struct egl_context *));
 
 #endif

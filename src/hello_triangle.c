@@ -1,8 +1,8 @@
 /* hello_triangle.c*/
 
-#include "es_utils.h"
-#include <stdlib.h>
 
+#include <stdlib.h>
+#include "hello_triangle.h"
 
 
 struct user_data {
@@ -85,6 +85,7 @@ int init(struct egl_context * context) {
   program_object = glCreateProgram();
 
   if (program_object == 0) {
+    LOGE("No program object");
     return 0;
   }
 
@@ -103,17 +104,21 @@ int init(struct egl_context * context) {
       glGetProgramInfoLog(program_object, info_len, 0x00, info_log);
       // todo log message
 
-      free(info_log);      
+      free(info_log);
+      LOGE("Not Linked and is gratter than one");
     }
 
     glDeleteProgram(program_object);
+    LOGE("Not Linked");
     return 0;
   }
 
   ud->program_object = program_object;
 
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-  return 0;
+
+  
+  return 1;
 }
 
 

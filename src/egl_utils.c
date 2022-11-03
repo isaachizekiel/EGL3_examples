@@ -2,7 +2,7 @@
 #include <GLES3/gl3.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "es_utils.h"
+#include "egl_utils.h"
 
 
 static EGLint get_context_renderable_type(EGLDisplay egl_display) {
@@ -209,9 +209,7 @@ int prepare_egl(struct egl_context *context) {
 
 // clean egl context
 void clean_egl_context(struct egl_context* context) {
-
-  // todo check if there are egl objects
-  
+  // todo check if there are egl objects  
   if (!eglMakeCurrent(context->egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT)) {
     switch (eglGetError()) {
     case EGL_BAD_MATCH:
@@ -264,6 +262,13 @@ void clean_egl_display(struct egl_context * context) {
 
 // clean native window
 void clean_native_window() {
-  // todo
-  
+  // todo 
+}
+
+void register_draw_cb(struct egl_context *context, void (*draw_cb)(struct egl_context *)) {
+  context->draw_cb = draw_cb;
+}
+
+void register_shutdown_cb(struct egl_context *context, void (*shutdown_cb)(struct egl_context *)) {
+  context->shutdown_cb = shutdown_cb;
 }

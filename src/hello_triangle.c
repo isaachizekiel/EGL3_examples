@@ -81,7 +81,7 @@ int init(struct egl_context * context) {
   vertex_shader = load_shader(GL_VERTEX_SHADER, vertex_shader_str) ;
   fragment_shader = load_shader(GL_FRAGMENT_SHADER, fragment_shader_str);
 
-  // create the program pbject
+  // create the shader program pbject
   program_object = glCreateProgram();
 
   if (program_object == 0) {

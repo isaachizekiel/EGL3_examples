@@ -6,11 +6,6 @@
 #include "hello_triangle.h"
 
 
-struct user_data {
-  // handle for the sharder program object
-  GLuint program_object;
-};
-
 GLuint load_shader(GLenum type, const char * shader_src) {
   GLuint shader;
   GLint compiled;
@@ -51,10 +46,9 @@ GLuint load_shader(GLenum type, const char * shader_src) {
 }
 
 
-// initialize the shader and program object
-
+// initialize the shader and program object aka gl objects
 int init(struct egl_context * context) { 
-  struct user_data * ud = context->user_data;
+  struct program_data * pd = context->shhader_program_data;
 
   char vertex_shader_str [] =
     "#version 300 es\n"
@@ -114,7 +108,7 @@ int init(struct egl_context * context) {
     return 0;
   }
 
-  ud->program_object = program_object;
+  pd->program_object = program_object;
 
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -125,7 +119,7 @@ int init(struct egl_context * context) {
 
 // draw the triangle using the above triangle shader
 void draw(struct egl_context * context) {
-  struct user_data * ud = context->user_data;
+  struct program_data * pd = context->shhader_program_data;
 
   LOGE("Drawing.. ");
   GLfloat vector_vertices [] =
@@ -136,12 +130,12 @@ void draw(struct egl_context * context) {
     };
 
   // set the view port
-  glViewport (0, 0, context->width, context->height);
+  glViewport(0, 0, context->width, context->height);
 
   // clear the color buffer
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glUseProgram(ud->program_object);
+  glUseProgram(pd->program_object);
 
   // load the vertex data
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, vector_vertices);
@@ -150,11 +144,13 @@ void draw(struct egl_context * context) {
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-void update(struct egl_context *context, float interval) {
-  // this is not necessary for the static render (no animation)
+void update(struct egl_context *context, float inteval) {
+  // this is not neccessary for the static render (no animation)
 }
+
 void shutdown(struct egl_context * context) {
-  struct user_data * ud = context->user_data;
-  glDeleteProgram(ud->program_object);  
+  struct program_data * pd = context->shhader_program_data;
+  glDeleteProgram(pd->program_object);
+  free(context->shhader_program_data);
 }
 

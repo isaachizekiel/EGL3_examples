@@ -24,7 +24,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
             context->egl_native_window = app->window;
             context->app_life_cycle ^= 0x1;
             // todo find a new place for this
-            if (!init(context)) {
+            if (!init(context)) { //
                 LOGE("can not initialize vertex and fragment shaders");
                 return;
             }
@@ -141,6 +141,8 @@ void android_main(struct android_app* app) {
 
     context = malloc (sizeof (struct egl_context));
     app->userData = context;
+
+    context->shhader_program_data = malloc(sizeof (struct program_data));
 
     register_draw_cb(context, draw);
     register_shutdown_cb(context, shutdown);

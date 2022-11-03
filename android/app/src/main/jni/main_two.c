@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+
 #include "es_utils.h"
 
 // the game state storage, this is like the saved state bundle
@@ -131,6 +132,8 @@ void android_main(struct android_app* app) {
 
     context = malloc (sizeof (struct egl_context));
     app->userData = context;
+
+
 
     // main window loop
     game_loop(app);

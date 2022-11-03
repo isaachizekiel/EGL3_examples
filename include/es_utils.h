@@ -1,6 +1,8 @@
 #ifndef GAME_EGL_UTILS_H
 #define GAME_EGL_UTILS_H
 
+#include <stdio.h>
+
 #include <GLES3/gl3.h>
 #include <GLES3/gl3platform.h>
 

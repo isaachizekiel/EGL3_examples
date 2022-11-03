@@ -17,10 +17,12 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE    	:= game
 
-LOCAL_C_INCLUDES 	:= $(LOCAL_PATH)/../../../../../include/
-EGL_UTILS_SRC	 	:= $(LOCAL_PATH)/../../../../../src/
+LOCAL_C_INCLUDES 	:= $(LOCAL_PATH)/../../../../../include
+EGL_UTILS_SRC	 	:= $(LOCAL_PATH)/../../../../../src
 
-LOCAL_SRC_FILES := $(EGL_UTILS_SRC)/es_utils.c main_two.c
+EXTERNAL_SRC 		:= $(EGL_UTILS_SRC)/es_utils.c $(EGL_UTILS_SRC)/hello_triangle.c
+
+LOCAL_SRC_FILES := $(EXTERNAL_SRC) main_two.c
 
 LOCAL_LDLIBS    := -llog -landroid -lEGL -lGLESv3
 

@@ -1,0 +1,4 @@
+#ifndef GAME_HELLO_TRIANGLE_H
+#define GAME_HELLO_TRIANGLE_H
+
+#endif

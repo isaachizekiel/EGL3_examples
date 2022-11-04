@@ -49,6 +49,7 @@ struct egl_context {
   void ( *draw_cb ) ( struct egl_context * );
   void ( *update_cb ) ( struct egl_context *, float );
   void ( *shutdown_cb ) ( struct egl_context * );
+  void ( *key_cb ) ( struct egl_context *, unsigned char, int, int ); // for X11
 };
 
 

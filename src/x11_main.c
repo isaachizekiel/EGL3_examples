@@ -1,6 +1,7 @@
 // x11_main.c
 
 
+#include <EGL/egl.h>
 #include <X11/X.h>
 #include  <X11/Xlib.h>
 #include  <X11/Xatom.h>
@@ -73,7 +74,34 @@ EGLBoolean create_window(struct egl_context *context, const char *title) {
 
 // reads from x11 event loop and interupt program if there is a keypress
 // or window close action
-EGLBoolean user_interupt(struct egl_context * context) { return GL_TRUE; }
+EGLBoolean user_interupt(struct egl_context * context) {
+  XEvent xev;
+  KeySym key;
+  EGLBoolean usr_interupt;
+  char txt;
+
+  // pump all messages from X server. Keypress are directed to keyfunc (if defined)
+  while (XPending(x_display)) {
+    XNextEvent(x_display, &xev);
+    if(xev.type == KeyPress) {
+      if (XLookupString(&xev.xkey, &txt,  1, &key, 0) == 1) {
+	if (context->key_cb != NULL) {
+	  context->key_cb(context, txt, 0, 0);
+	}
+      }      
+    }
+    if (xev.type == ClientMessage) {
+      if (xev.xclient.data.l[0] == s_wmDeleteMessage) {
+	usr_interupt = EGL_FALSE;
+      }
+    }
+
+    if (xev.type == DestroyNotify) {
+      usr_interupt = EGL_TRUE;
+    }
+  }
+  return usr_interupt;
+}
 
 // start mai window loop
 void window_loop(struct egl_context * context) {

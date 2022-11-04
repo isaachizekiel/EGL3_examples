@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> 
+#include <sys/time.h>
 
 #include <GLES3/gl3.h>
 #include <GLES3/gl3platform.h>

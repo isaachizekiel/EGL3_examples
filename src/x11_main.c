@@ -6,6 +6,8 @@
 #include  <X11/Xlib.h>
 #include  <X11/Xatom.h>
 #include  <X11/Xutil.h>
+#include <sys/time.h>
+
 
 #include "egl_utils.h"
 
@@ -105,8 +107,30 @@ EGLBoolean user_interupt(struct egl_context * context) {
 
 // start mai window loop
 void window_loop(struct egl_context * context) {
+  struct timeval t1, t2;
+  struct timezone tz;
+  float deltatime;
+
+  gettimeofday(&t1, &tz);
   
+  while(user_interupt(context) == EGL_FALSE) {
+    // calculate fps
+    gettimeofday(&t2, &tz);
+    deltatime = (t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
+    t1 = t2;
+
+    if (context->update_cb != NULL) {
+      context->update_cb(context, deltatime);
+    }
+    
+    if(context->draw_cb != NULL) {
+      context->draw_cb(context);
+    }
+
+    eglSwapBuffers(context->egl_display, context->egl_surface);
+  }
 }
 
 int main() {
-  return 0;}
+  return 0;
+}

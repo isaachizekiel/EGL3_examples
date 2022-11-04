@@ -22,6 +22,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd) {
     switch (cmd) {
         case APP_CMD_INIT_WINDOW:
             context->egl_native_window = app->window;
+            context->egl_native_display = EGL_DEFAULT_DISPLAY;
             context->app_life_cycle ^= 0x1;
             // todo find a new place for this
             if (!init(context)) { //
@@ -115,7 +116,19 @@ static int is_animating() {
 static void do_frame(struct android_app *app) {
     // LOGE("do frame");
     prepare_egl(context);
-    context->draw_cb(context);
+
+    // Call app update function
+    if ( context->update_cb != NULL ) {
+        struct timespec res;
+        long curTime = clock_gettime(CLOCK_MONOTONIC, &res);
+        float deltaTime =  ( 0 );
+        context->update_cb(context, 0);
+    }
+
+    if ( context->draw_cb != NULL ) {
+        context->draw_cb (context);
+        eglSwapBuffers ( context->egl_display, context->egl_surface );
+    }
 }
 
 static void game_loop(struct android_app* app) {

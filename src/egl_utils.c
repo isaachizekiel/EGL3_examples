@@ -275,3 +275,7 @@ void register_draw_cb(struct egl_context *context, void (*draw_cb)(struct egl_co
 void register_shutdown_cb(struct egl_context *context, void (*shutdown_cb)(struct egl_context *)) {
   context->shutdown_cb = shutdown_cb;
 }
+
+void register_key_cb(struct egl_context *context, void (*key_cb)(struct egl_context *, unsigned char, int, int)) {
+  context->key_cb = key_cb;
+}

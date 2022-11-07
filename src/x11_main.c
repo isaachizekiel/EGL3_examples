@@ -6,6 +6,7 @@
 #include  <X11/Xlib.h>
 #include  <X11/Xatom.h>
 #include  <X11/Xutil.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
 
@@ -133,13 +134,13 @@ void window_loop(struct egl_context * context) {
 }
 
 int main() {
-  struct egl_context * context;
-  memset(context, 0, sizeof(struct egl_context));
+  struct egl_context * context = malloc(sizeof(struct egl_context));
 
-  window_loop(context);
+  // memset(context, 0, sizeof(struct egl_context));
+
+  //window_loop(context);
 
   if (context->shutdown_cb != NULL) context->shutdown_cb(context);
-
   
   return 0;
 }

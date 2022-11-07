@@ -47,10 +47,10 @@ struct egl_context {
 
   void *shader_program_data;
 
-  void ( *draw_cb ) ( struct egl_context * );
-  void ( *update_cb ) ( struct egl_context *, float );
-  void ( *shutdown_cb ) ( struct egl_context * );
-  void ( *key_cb ) ( struct egl_context *, unsigned char, int, int ); // for X11
+  void (*draw_cb) (struct egl_context *);
+  void (*update_cb) (struct egl_context *, float);
+  void (*shutdown_cb) (struct egl_context *);
+  void (*key_cb) (struct egl_context *, unsigned char, int, int); // for X11
 };
 
 
@@ -75,6 +75,10 @@ void register_draw_cb(struct egl_context *context, void (*draw_cb)(struct egl_co
 // callback for the shutdown function
 void register_shutdown_cb(struct egl_context *context, void (*shutdown_cb)(struct egl_context *));
 
+// callback for the update fiinction
 void register_update_cb(struct egl_context *context, void (*shutdown_cb)(struct egl_context *, float interval));
+
+void register_key_cb(struct egl_context *context, void (*key_cb) ( struct egl_context *, unsigned char, int, int ));
+
 
 #endif
